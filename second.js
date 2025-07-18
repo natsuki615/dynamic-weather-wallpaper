@@ -279,6 +279,28 @@ function setup() {
 
 }
 
+function fallBackIP() {
+    console.log("fallBackIP")
+    fetch('https://api.ipdata.co?api-key=cf4cf9fb8db7c6aef82b80bda2cdc7d6d4c840c00f2317bcb6027fee')
+        .then(res => res.json())
+        .then(data => {
+            ip = data.ip;
+            lat = data.latitude;
+            lon = data.longitude;
+            city = data.city;
+            if (!lat || !lon) {
+                console.log("lat and lon not found");
+                return;
+            }
+            let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&&units=imperial&appid=13b9f84998168627846a51bb3a9dfb10`;    
+            loadJSON(apiUrl, retreiveWeather);
+        })
+        .catch(err => {
+            console.error("Error using IP fallback: ", err);
+        })
+}
+
+
 function success(position) {
     lat = position.coords.latitude;
     lon = position.coords.longitude;
@@ -288,6 +310,7 @@ function success(position) {
 
 function error() {
     console.log("Unable to retrieve your location. Permission denied?");
+    fallBackIP();
 }
 
 function retreiveWeather(data) {
