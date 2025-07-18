@@ -1,6 +1,8 @@
 let mainPalette = {};
 let lat;
 let lon;
+let time_abbr;
+let time;
 
 let temp;
 let humidity;
@@ -274,8 +276,8 @@ class Cloud {
 }
 
 function preload() {
-    myFont = loadFont('Tangerine-Regular.ttf');
-    myFontBold = loadFont('Tangerine-Bold.ttf');
+    myFont = loadFont('Averia_Libre/AveriaLibre-Regular.ttf');
+    myFontBold = loadFont('Averia_Libre/AveriaLibre-Bold.ttf');
 }
 
 function setup() {
@@ -296,6 +298,9 @@ function fallBackIP() {
             lat = data.latitude;
             lon = data.longitude;
             city = data.city;
+            time_abbr = data.time_zone.abbr;
+            time = data.time_zone.current_time;
+
             if (!lat || !lon) {
                 console.log("lat and lon not found");
                 return;
@@ -323,27 +328,25 @@ function error() {
 
 function retreiveWeather(data) {
     temp = data.main.temp;
-    // temp = 30;
-    humidity = data.main.humidity;
+    // temp = 87;
+    // humidity = data.main.humidity;
     group = data.weather[0].main;
-    // group = "Atmosphere"; 
-    des = data.weather[0].description;
-    // des = "raining very hard"
+    // group = "Squall"; 
+    des = data.weather[0].description.toLowerCase();
+    // des = "very heavy rain"
     windSpeed = data.wind.speed;
-    // windSpeed = 30;
+    // windSpeed = 50;
     precipitation = data.rain ? data.rain['1h'] : 0; 
-    // precipitation = 60;
+    // precipitation = 100;
     clouds = data.clouds.all;
     // clouds = 25;
     snow = data.snow ? data.snow['1h'] : 0; 
     // snow = 50;
-    if (!city) {
-        city = data.name; 
-    }
+    city = data.name.toLowerCase(); 
+    // city = "Pittsburgh";
 
     let tempG = map(temp, -30,150, 230,70);
     let tempB = map(temp, -30,150, 210,0);
-    // console.log(tempR, tempG, tempB);
     mainPalette["temp"] = color(255, tempG, tempB);
 
     if (group == "Thunderstorm") { 
@@ -386,7 +389,7 @@ function retreiveWeather(data) {
         mainPalette["circDark3"] = color(48, 54, 5);
         mainPalette["circLight1"] = color(230, 208, 245);
         mainPalette["circLight2"] = color(125, 93, 201);
-        mainPalette["circLight3"] = color(190, 143, 255);
+        mainPalette["circLight3"] = color(203, 166, 255);
         mainPalette["des"] = color(232, 255, 227);
 
         windCol = color(224, 255, 217);
@@ -406,7 +409,37 @@ function retreiveWeather(data) {
 
         windCol = color(29, 147, 194);
     }
-    else if (group == "Atmosphere") { 
+    else if (group == "Mist" || group == "Fog") { 
+        mainPalette["main"] = color(143, 203, 155);
+        mainPalette["dark"] = color(91, 146, 121); 
+        mainPalette["darkest"] = color(18, 51, 49); 
+        mainPalette["light"] = color(234, 230, 229);
+        mainPalette["circDark1"] = color(143, 128, 115);
+        mainPalette["circDark2"] = color(92, 72, 54);
+        mainPalette["circDark3"] = color(51, 34, 12);
+        mainPalette["circLight1"] = color(220, 247, 241);
+        mainPalette["circLight2"] = color(134, 194, 181);
+        mainPalette["circLight3"] = color(109, 237, 184);
+        mainPalette["des"] = color(255, 252, 227);
+
+        windCol = color(255, 246, 230);
+    }
+    else if (group == "Smoke" || group == "Haze") { 
+        mainPalette["main"] = color(188, 141, 160);
+        mainPalette["dark"] = color(171, 73, 103); 
+        mainPalette["darkest"] = color(97, 57, 76); 
+        mainPalette["light"] = color(227, 220, 86);
+        mainPalette["circDark1"] = color(97, 93, 91);
+        mainPalette["circDark2"] = color(88, 76, 70);
+        mainPalette["circDark3"] = color(12, 23, 19);
+        mainPalette["circLight1"] = color(200, 189, 206);
+        mainPalette["circLight2"] = color(140, 118, 148);
+        mainPalette["circLight3"] = color(252, 244, 189);
+        mainPalette["des"] = color(255, 252, 227);
+
+        windCol = color(255, 246, 230);
+    }
+    else if (group == "Dust" || group == "Sand" || group == "Ash") { 
         mainPalette["main"] = color(219, 173, 106);
         mainPalette["dark"] = color(188, 138, 85); 
         mainPalette["darkest"] = color(135, 95, 53); 
@@ -417,6 +450,21 @@ function retreiveWeather(data) {
         mainPalette["circLight1"] = color(255, 243, 191);
         mainPalette["circLight2"] = color(179, 171, 255);
         mainPalette["circLight3"] = color(248, 247, 255);
+        mainPalette["des"] = color(255, 252, 227);
+
+        windCol = color(255, 246, 230);
+    }
+    else if (group == "Squall" || group == "Tornado") { 
+        mainPalette["main"] = color(117, 112, 131);
+        mainPalette["dark"] = color(71, 64, 86); 
+        mainPalette["darkest"] = color(9, 12, 8); 
+        mainPalette["light"] = color(138, 149, 165);
+        mainPalette["circDark1"] = color(87, 80, 166);
+        mainPalette["circDark2"] = color(42, 51, 133);
+        mainPalette["circDark3"] = color(10, 17, 82);
+        mainPalette["circLight1"] = color(165, 176, 157);
+        mainPalette["circLight2"] = color(240, 247, 225);
+        mainPalette["circLight3"] = color(197, 230, 126);
         mainPalette["des"] = color(255, 252, 227);
 
         windCol = color(255, 246, 230);
@@ -530,6 +578,7 @@ function draw() {
         image(spiral.buffer, -spiral.size/2, -spiral.size/2); //offset for centered rotation
         pop();
     }
+
 }
 
 function drawBg() {
@@ -553,15 +602,19 @@ function drawBg() {
     }
 
     push();
-    let size = width/20;
+    let size = width/35;
     bgBuffer.noStroke();
     bgBuffer.fill("white");
     bgBuffer.textSize(size);
     bgBuffer.textFont(myFontBold);
     
     bgBuffer.textAlign(CENTER);
-    bgBuffer.text(des, width/2, height/2);
-    bgBuffer.text(city, width/2, height/2 + size);
+    bgBuffer.text(des, width/2, height/2 - size/2);
+    bgBuffer.text(city, width/2, height/2 + size/2);
+    // if (time && time_abbr) {
+    //     bgBuffer.text(time_abbr, width/2, height/2 + 2*size)
+    //     bgBuffer.text(time, width/2, height/2 + 3*size)
+    // }
     pop();
     drawTempLines();
 }
