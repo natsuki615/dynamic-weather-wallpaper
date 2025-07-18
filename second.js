@@ -19,6 +19,9 @@ let snowFall = [];
 let cloudsArr = [];
 let spiralsCircles = [];
 
+let myFont;
+let myFontBold;
+
 
 class RainDrop {
     constructor(x, y, length){
@@ -270,6 +273,11 @@ class Cloud {
 
 }
 
+function preload() {
+    myFont = loadFont('Tangerine-Regular.ttf');
+    myFontBold = loadFont('Tangerine-Bold.ttf');
+}
+
 function setup() {
     createCanvas(windowWidth, windowHeight);
     navigator.geolocation.getCurrentPosition(success, error);
@@ -329,7 +337,9 @@ function retreiveWeather(data) {
     // clouds = 25;
     snow = data.snow ? data.snow['1h'] : 0; 
     // snow = 50;
-    city = data.name; 
+    if (!city) {
+        city = data.name; 
+    }
 
     let tempG = map(temp, -30,150, 230,70);
     let tempB = map(temp, -30,150, 210,0);
@@ -543,12 +553,15 @@ function drawBg() {
     }
 
     push();
+    let size = width/20;
     bgBuffer.noStroke();
-    bgBuffer.fill(mainPalette["des"]);
-    bgBuffer.textSize(width/60);
-    bgBuffer.textFont('Verdana');
-    let textwidth = textWidth(des + ", " + city);
-    bgBuffer.text(des + ", " + city, width-textwidth*3, height-50);
+    bgBuffer.fill("white");
+    bgBuffer.textSize(size);
+    bgBuffer.textFont(myFontBold);
+    
+    bgBuffer.textAlign(CENTER);
+    bgBuffer.text(des, width/2, height/2);
+    bgBuffer.text(city, width/2, height/2 + size);
     pop();
     drawTempLines();
 }
